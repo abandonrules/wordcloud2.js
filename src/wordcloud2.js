@@ -480,9 +480,10 @@ if (!window.clearImmediate) {
       }
 
       if (rotationSteps > 0) {
+        // Min rotation + zero or more steps * span of one step
         return minRotation + 
-          (1 / Math.floor((Math.random() * rotationSteps) + 1)) *
-          rotationRange;
+          Math.floor(Math.random() * rotationSteps) *
+          rotationRange / (rotationSteps - 1);
       }
       else {
         return minRotation + Math.random() * rotationRange;
@@ -1083,12 +1084,14 @@ if (!window.clearImmediate) {
           canvas.addEventListener('mousemove', wordcloudhover);
         }
 
+        var touchend = function (e) {
+          e.preventDefault();
+        };
+
         if (settings.click) {
           canvas.addEventListener('click', wordcloudclick);
           canvas.addEventListener('touchstart', wordcloudclick);
-          canvas.addEventListener('touchend', function (e) {
-            e.preventDefault();
-          });
+          canvas.addEventListener('touchend', touchend);
           canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)';
         }
 
@@ -1097,6 +1100,8 @@ if (!window.clearImmediate) {
 
           canvas.removeEventListener('mousemove', wordcloudhover);
           canvas.removeEventListener('click', wordcloudclick);
+          canvas.removeEventListener('touchstart', wordcloudclick);
+          canvas.removeEventListener('touchend', touchend);
           hovered = undefined;
         });
       }
